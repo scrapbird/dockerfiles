@@ -31,8 +31,8 @@ RUN apt-get update && \
 
 # Get latest radare2 release and build it
 WORKDIR /opt
-RUN git clone https://github.com/radare/radare2
-RUN cd radare2 && ./sys/install.sh
+RUN git clone https://github.com/radare/radare2 \
+	&& cd radare2 && ./sys/install.sh
 
 # Get cmake
 WORKDIR /opt
@@ -53,24 +53,23 @@ RUN cmake .. -DCMAKE_INSTALL_PREFIX=/opt/retdec-install \
 	&& make -j`grep -c ^processor /proc/cpuinfo` \
 	&& make install
 
-RUN wget -O - https://deb.nodesource.com/setup_10.x | bash -
-RUN apt-get install -yq nodejs
+RUN wget -O - https://deb.nodesource.com/setup_10.x | bash - \
+	&& apt-get install -yq nodejs
 
 # Add r2 user
 RUN useradd r2
 
 WORKDIR /home/r2
-RUN mkdir -p /home/r2/.config/radare2
-RUN touch /home/r2/.radare2rc
+RUN mkdir -p /home/r2/.config/radare2 \
+	&& touch /home/r2/.radare2rc
 
 RUN chown -R r2:r2 /home/r2/
 USER r2
 
-RUN echo "/opt/retdec-install/bin/retdec-decompiler.sh" > .r2retdec
-
 RUN r2pm init \
 	&& r2pm -i r2com \
-	&& r2pm -i r2retdec
+	&& r2pm -i r2retdec \
+	&& echo "/opt/retdec-install/bin/retdec-decompiler.sh" > .r2retdec
 
 ENTRYPOINT ["/bin/bash"]
 
