@@ -2,7 +2,7 @@ FROM ubuntu:16.04
 
 # Dependencies
 RUN apt-get update && \
-    apt-get -y install \
+	apt-get -y install \
 	libcurl4-gnutls-dev \
 	build-essential \
 	git \
@@ -26,8 +26,8 @@ RUN apt-get update && \
 	graphviz \
 	python3-dev \
 	ca-certificates \
-    --no-install-recommends \
-    && rm -rf /var/lib/apt/lists/*
+	--no-install-recommends \
+	&& rm -rf /var/lib/apt/lists/*
 
 # Get latest radare2 release and build it
 WORKDIR /opt
