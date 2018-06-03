@@ -24,7 +24,6 @@ RUN apt-get update && \
 
 RUN pip3 install --upgrade jupyter
 
-
 # Get latest cutter release
 WORKDIR /opt
 RUN curl https://api.github.com/repos/radareorg/cutter/releases/latest | \
