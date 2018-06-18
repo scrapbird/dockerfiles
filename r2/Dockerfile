@@ -29,11 +29,6 @@ RUN apt-get update && \
 	--no-install-recommends \
 	&& rm -rf /var/lib/apt/lists/*
 
-# Get latest radare2 release and build it
-WORKDIR /opt
-RUN git clone https://github.com/radare/radare2 \
-	&& cd radare2 && ./sys/install.sh
-
 # Get cmake
 WORKDIR /opt
 RUN git clone -b v3.10.2 https://cmake.org/cmake.git cmake
@@ -42,7 +37,7 @@ RUN ./bootstrap --system-curl \
 	&& make -j`grep -c ^processor /proc/cpuinfo` \
 	&& make install
 
-# Get latest retdec
+# Get latest retdec and build it
 WORKDIR /opt
 RUN git clone https://github.com/avast-tl/retdec \
 	&& mkdir /opt/retdec/build \
@@ -53,8 +48,15 @@ RUN cmake .. -DCMAKE_INSTALL_PREFIX=/opt/retdec-install \
 	&& make -j`grep -c ^processor /proc/cpuinfo` \
 	&& make install
 
+# Install nodejs
 RUN wget -O - https://deb.nodesource.com/setup_10.x | bash - \
 	&& apt-get install -yq nodejs
+
+# Get latest radare2 release and build it
+WORKDIR /opt
+RUN git clone https://github.com/radare/radare2 \
+	&& cd radare2 && ./sys/install.sh
+
 
 # Add r2 user
 RUN useradd r2
