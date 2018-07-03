@@ -25,18 +25,25 @@ RUN apt-get update && \
 	doxygen \
 	graphviz \
 	python3-dev \
+	python3-pip \
+	python-pip \
+	python-setuptools \
+	python3-setuptools \
 	ca-certificates \
 	--no-install-recommends \
 	&& rm -rf /var/lib/apt/lists/*
 
+# Install python modules
+RUN pip install r2pipe
+
 # Get latest radare2 release and build it
 WORKDIR /opt
-RUN git clone https://github.com/radare/radare2 \
+RUN git clone --depth=1 https://github.com/radare/radare2 \
 	&& cd radare2 && ./sys/install.sh
 
 # Get cmake
 WORKDIR /opt
-RUN git clone -b v3.10.2 https://cmake.org/cmake.git cmake
+RUN git clone --depth=1 -b v3.10.2 https://cmake.org/cmake.git cmake
 WORKDIR /opt/cmake
 RUN ./bootstrap --system-curl \
 	&& make -j`grep -c ^processor /proc/cpuinfo` \
@@ -44,7 +51,7 @@ RUN ./bootstrap --system-curl \
 
 # Get latest retdec
 WORKDIR /opt
-RUN git clone https://github.com/avast-tl/retdec \
+RUN git clone --depth=1 https://github.com/avast-tl/retdec \
 	&& mkdir /opt/retdec/build \
 	&& mkdir /opt/retdec-install
 
