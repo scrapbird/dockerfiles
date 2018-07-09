@@ -6,6 +6,7 @@ RUN apt-get update && \
 	curl \
 	libqt5svg5-dev \
 	make \
+	qt5-default \
 	qtbase5-dev \
 	qtwebengine5-dev \
 	unzip \
@@ -26,40 +27,21 @@ RUN pip3 install --upgrade jupyter
 
 # Get latest cutter release
 WORKDIR /opt
-RUN curl https://api.github.com/repos/radareorg/cutter/releases/latest | \
-	grep "zipball_url" | \
-	tr -d ",\" " | \
-	cut -d ":" -f 2,3 | \
-	wget -O cutter.zip -i - && \
-	unzip cutter.zip && \
-	rm cutter.zip && \
-	mv radareorg-cutter* cutter
-
-# Get latest radare2 release and build it
+RUN git clone --depth=1 --recurse-submodules https://github.com/radareorg/cutter
 WORKDIR /opt/cutter
-RUN rm -rf radare2 && \
-	curl https://api.github.com/repos/radare/radare2/releases/latest | \
-	grep "zipball_url" | \
-	tr -d ",\" " | \
-	cut -d ":" -f 2,3 | \
-	wget -O radare2.zip -i - && \
-	unzip radare2.zip && \
-	rm radare2.zip && \
-	mv radare-radare2* radare2
 
 RUN cd radare2 && ./sys/install.sh
 
 # Build cutter
-RUN mkdir build
-WORKDIR /opt/cutter/build
-RUN cmake ../src \
-	&& make
+RUN sed -i "s/QMAKE_CONF=.*/QMAKE_CONF=\"CUTTER_ENABLE_JUPYTER=false CUTTER_ENABLE_QTWEBENGINE=false\"/gi" ./build.sh
+RUN ./build.sh
 
 # Add r2 user
 RUN useradd r2
 
 WORKDIR /home/r2
-RUN mkdir -p /home/r2/.config/radare2 \
+RUN mkdir -p /home/r2/.local/share/jupyter \
+	&& mkdir -p /home/r2/.config/radare2 \
 	&& touch /home/r2/.radare2rc \
 	&& chown -R r2:r2 /home/r2/
 
