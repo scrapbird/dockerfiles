@@ -36,11 +36,6 @@ RUN apt-get update && \
 # Install python modules
 RUN pip install r2pipe
 
-# Get latest radare2 release and build it
-WORKDIR /opt
-RUN git clone --depth=1 https://github.com/radare/radare2 \
-	&& cd radare2 && ./sys/install.sh
-
 # Get cmake
 WORKDIR /opt
 RUN git clone --depth=1 -b v3.10.2 https://cmake.org/cmake.git cmake
@@ -66,9 +61,8 @@ RUN wget -O - https://deb.nodesource.com/setup_10.x | bash - \
 
 # Get latest radare2 release and build it
 WORKDIR /opt
-RUN git clone https://github.com/radare/radare2 \
+RUN git clone --depth=1 https://github.com/radare/radare2 \
 	&& cd radare2 && ./sys/install.sh
-
 
 # Add r2 user
 RUN useradd r2
