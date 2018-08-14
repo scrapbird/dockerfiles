@@ -30,10 +30,11 @@ WORKDIR /opt
 RUN git clone --depth=1 --recurse-submodules https://github.com/radareorg/cutter
 WORKDIR /opt/cutter
 
+# Install radare2
 RUN cd radare2 && ./sys/install.sh
 
 # Build cutter
-RUN sed -i "s/QMAKE_CONF=.*/QMAKE_CONF=\"CUTTER_ENABLE_JUPYTER=false CUTTER_ENABLE_QTWEBENGINE=false\"/gi" ./build.sh
+# RUN sed -i "s/QMAKE_CONF=.*/QMAKE_CONF=\"CUTTER_ENABLE_JUPYTER=false CUTTER_ENABLE_QTWEBENGINE=false\"/gi" ./build.sh
 RUN ./build.sh
 
 # Add r2 user
